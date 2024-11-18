@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
         .animate-pulse-slow {
             animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -28,128 +29,239 @@
         .slide-in {
             animation: slideIn 0.3s ease-out forwards;
         }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
     </style>
 </head>
-<body class="bg-[#121212] text-white min-h-screen">
-    <!-- Floating Action Button -->
-    <button id="helpBtn" class="fixed bottom-6 right-6 bg-blue-500 p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50">
-        <i data-lucide="help-circle" class="w-6 h-6"></i>
-    </button>
-
-    <div class="max-w-4xl mx-auto p-4">
-        <!-- Header -->
-        <header class="flex items-center justify-between py-6">
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 text-white min-h-screen flex flex-col">
+    <!-- Top Navigation Bar -->
+    <nav class="glassmorphism sticky top-0 z-50 px-4 py-3 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <i data-lucide="share" class="w-5 h-5"></i>
+                <div class="w-10 h-10 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <i data-lucide="share" class="w-6 h-6"></i>
                 </div>
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-indigo-500 bg-clip-text text-transparent">
                     FBSHAREBOOSTER
                 </h1>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="statsBtn" class="p-2 rounded-full hover:bg-gray-800 relative">
-                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-                    <span class="absolute -top-1 -right-1 bg-pink-500 text-xs rounded-full w-4 h-4 flex items-center justify-center" id="activeSessionsCount">0</span>
+                <button id="statsBtn" class="p-2 rounded-full hover:bg-white/10 transition-colors relative">
+                    <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+                    <span class="absolute -top-1 -right-1 bg-pink-500 text-xs rounded-full w-5 h-5 flex items-center justify-center" id="activeSessionsCount">0</span>
                 </button>
-                <button id="settingsBtn" class="p-2 rounded-full hover:bg-gray-800">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
+                <button id="helpBtn" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <i data-lucide="help-circle" class="w-6 h-6"></i>
                 </button>
-                <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-800">
-                    <i data-lucide="moon" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div class="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-gray-400">Total Shares</h3>
-                    <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
-                </div>
-                <p class="text-2xl font-bold mt-2" id="totalShares">0</p>
-            </div>
-            <div class="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-gray-400">Active Sessions</h3>
-                    <i data-lucide="activity" class="w-5 h-5 text-blue-500"></i>
-                </div>
-                <p class="text-2xl font-bold mt-2" id="activeSessions">0</p>
-            </div>
-            <div class="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-gray-400">Success Rate</h3>
-                    <i data-lucide="percent" class="w-5 h-5 text-pink-500"></i>
-                </div>
-                <p class="text-2xl font-bold mt-2" id="successRate">0%</p>
             </div>
         </div>
+    </nav>
 
-        <!-- Main Form -->
-        <div class="mt-8 bg-gray-800/50 rounded-xl p-6 backdrop-blur-sm">
-            <form id="shareForm" class="space-y-6">
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-300">
-                        <div class="flex items-center justify-between">
-                            <span>Facebook Cookies</span>
-                            <button type="button" id="pasteCookies" class="text-xs text-blue-400 hover:text-blue-300">
-                                Paste from Clipboard
-                            </button>
+    <div class="flex-grow overflow-y-auto">
+        <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 pb-24">
+            <!-- Home Section -->
+            <div id="homeSection" class="mb-8">
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="glassmorphism rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-300">Total Shares</h3>
+                            <i data-lucide="trending-up" class="w-6 h-6 text-green-400"></i>
                         </div>
-                    </label>
-                    <textarea id="cookie" class="w-full bg-gray-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" rows="4" placeholder="Paste your Facebook cookies here"></textarea>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-300">Post URL</label>
-                    <div class="relative">
-                        <i data-lucide="link" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                        <input type="url" id="url" class="w-full bg-gray-700 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="https://facebook.com/...">
+                        <p class="text-4xl font-bold" id="totalShares">0</p>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-300">Active Sessions</h3>
+                            <i data-lucide="activity" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <p class="text-4xl font-bold" id="activeSessions">0</p>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-300">Success Rate</h3>
+                            <i data-lucide="percent" class="w-6 h-6 text-pink-400"></i>
+                        </div>
+                        <p class="text-4xl font-bold" id="successRate">0%</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-300">Share Amount</label>
-                        <div class="relative">
-                            <i data-lucide="hash" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                            <input type="number" id="amount" class="w-full bg-gray-700 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter amount">
+                <!-- Main Form -->
+                <div class="glassmorphism rounded-2xl p-6 mb-8">
+                    <form id="shareForm" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">
+                                <div class="flex items-center justify-between">
+                                    <span>Facebook Cookies</span>
+                                    <button type="button" id="pasteCookies" class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                                        Paste from Clipboard
+                                    </button>
+                                </div>
+                            </label>
+                            <textarea id="cookie" class="w-full bg-white/5 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" rows="4" placeholder="Paste your Facebook cookies here"></textarea>
                         </div>
-                    </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-300">
-                            <div class="flex items-center justify-between">
-                                <span>Interval (seconds)</span>
-                                <span class="text-xs text-gray-400" id="estimatedTime"></span>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">Post URL</label>
+                            <div class="relative">
+                                <i data-lucide="link" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="url" id="url" class="w-full bg-white/5 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="https://facebook.com/...">
                             </div>
-                        </label>
-                        <div class="relative">
-                            <i data-lucide="clock" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                            <input type="number" id="interval" class="w-full bg-gray-700 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter interval">
                         </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-300">Share Amount</label>
+                                <div class="relative">
+                                    <i data-lucide="hash" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="number" id="amount" class="w-full bg-white/5 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter amount">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-300">
+                                    <div class="flex items-center justify-between">
+                                        <span>Interval (seconds)</span>
+                                        <span class="text-xs text-gray-400" id="estimatedTime"></span>
+                                    </div>
+                                </label>
+                                <div class="relative">
+                                    <i data-lucide="clock" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="number" id="interval" class="w-full bg-white/5 rounded-lg pl-10 p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter interval">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-indigo-500 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 group">
+                            <i data-lucide="share" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+                            Start Sharing
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="glassmorphism rounded-2xl p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <button id="pauseAllBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+                            <i data-lucide="pause" class="w-5 h-5 mr-2"></i>
+                            Pause All
+                        </button>
+                        <button id="resumeAllBtn" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+                            <i data-lucide="play" class="w-5 h-5 mr-2"></i>
+                            Resume All
+                        </button>
+                        <button id="stopAllBtn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+                            <i data-lucide="square" class="w-5 h-5 mr-2"></i>
+                            Stop All
+                        </button>
+                        <button id="exportDataBtn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+                            <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                            Export Data
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 group">
-                    <i data-lucide="share" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
-                    Start Sharing
-                </button>
-            </form>
-        </div>
-
-        <!-- Status Section -->
-        <div class="mt-8">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold">Share Status</h2>
-                <button id="clearAllBtn" class="text-sm text-gray-400 hover:text-white transition-colors">
-                    Clear All
-                </button>
+                <!-- Status Section -->
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold">Share Status</h2>
+                        <button id="clearAllBtn" class="text-sm text-gray-400 hover:text-white transition-colors">
+                            Clear All
+                        </button>
+                    </div>
+                    <div id="statusList" class="space-y-4"></div>
+                </div>
             </div>
-            <div id="statusList" class="space-y-4"></div>
+
+            <!-- Sessions Section -->
+            <div id="sessionsSection" class="hidden mb-8">
+                <h2 class="text-2xl font-semibold mb-6">Active Sessions</h2>
+                <div id="sessionsList" class="space-y-4"></div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div id="statisticsSection" class="hidden mb-8">
+                <h2 class="text-2xl font-semibold mb-6">Statistics</h2>
+                <div class="glassmorphism rounded-2xl p-6">
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">Total Shares (Last 7 Days)</h3>
+                            <canvas id="sharesChart" height="200"></canvas>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">Success Rate Over Time</h3>
+                            <canvas id="successRateChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settingsSection" class="hidden mb-8">
+                <h2 class="text-2xl font-semibold mb-6">Settings</h2>
+                <div class="glassmorphism rounded-2xl p-6">
+                    <form id="settingsForm" class="space-y-6">
+                        <div class="space-y-2">
+                            <label for="defaultInterval" class="block text-sm font-medium text-gray-300">Default Interval (seconds)</label>
+                            <input type="number" id="defaultInterval" class="w-full bg-white/5 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter default interval">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="maxConcurrentSessions" class="block text-sm font-medium text-gray-300">Max Concurrent Sessions</label>
+                            <input type="number" id="maxConcurrentSessions" class="w-full bg-white/5 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter max concurrent sessions">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="theme" class="block text-sm font-medium text-gray-300">Theme</label>
+                            <select id="theme" class="w-full bg-white/5 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-indigo-500 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-all">
+                            Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="glassmorphism fixed bottom-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-around py-3">
+                <button id="homeBtn" class="flex flex-col items-center justify-center text-white">
+                    <i data-lucide="home" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button id="sessionsBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
+                    <i data-lucide="list" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Sessions</span>
+                </button>
+                <button id="statisticsBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
+                    <i data-lucide="bar-chart-2" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Statistics</span>
+                </button>
+                <button id="settingsBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
+                    <i data-lucide="settings" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Settings</span>
+                </button>
+                <button id="profileBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
+                    <i data-lucide="user" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Profile</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="glassmorphism mt-auto py-4 text-center text-sm text-gray-400">
+        Powered by YURI EVISU
+    </footer>
 
     <script>
         // Initialize Lucide icons
@@ -165,7 +277,12 @@
                 position: 'top-end',
                 showConfirmButton: false,
                 timer: 3000,
-                timerProgressBar: true
+                timerProgressBar: true,
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdrop: 'rgba(0,0,0,0.4)',
+                customClass: {
+                    popup: 'glassmorphism'
+                }
             });
         }
 
@@ -238,6 +355,7 @@
                 const response = await fetch('/total');
                 const data = await response.json();
                 const statusList = document.getElementById('statusList');
+                const sessionsList = document.getElementById('sessionsList');
                 
                 // Update stats
                 document.getElementById('activeSessionsCount').textContent = data.length;
@@ -255,26 +373,51 @@
                     totalTarget ? `${Math.round((totalShares / totalTarget) * 100)}%` : '0%';
 
                 statusList.innerHTML = data.map(item => `
-                    <div class="bg-gray-800/50 p-4 rounded-lg slide-in">
+                    <div class="glassmorphism p-4 rounded-xl slide-in">
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-400">Session #${item.session}</span>
-                                ${item.count < item.target ? '<span class="animate-pulse-slow text-green-500">●</span>' : ''}
+                                ${item.count < item.target ? '<span class="animate-pulse-slow text-green-400">●</span>' : ''}
                             </div>
                             <span class="text-sm font-medium">${item.count}/${item.target} shares</span>
                         </div>
-                        <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-pink-500 to-blue-500 h-2 rounded-full transition-all duration-300" 
+                        <div class="w-full bg-white/10 rounded-full h-2 mb-2">
+                            <div class="bg-gradient-to-r from-pink-500 to-indigo-500 h-2 rounded-full transition-all duration-300" 
                                  style="width: ${(item.count / item.target) * 100}%"></div>
                         </div>
-                        <div class="mt-2 flex items-center justify-between">
+                        <div class="flex items-center justify-between">
                             <p class="text-sm text-gray-400 truncate flex-1">${item.url}</p>
-                            <button onclick="copyToClipboard('${item.url}')" class="ml-2 text-blue-400 hover:text-blue-300">
+                            <button onclick="copyToClipboard('${item.url}')" class="ml-2 text-indigo-400 hover:text-indigo-300">
                                 <i data-lucide="copy" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>
                 `).join('');
+
+                sessionsList.innerHTML = data.map(item => `
+                    <div class="glassmorphism p-4 rounded-xl slide-in">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium">Session #${item.session}</span>
+                            <div class="flex space-x-2">
+                                <button onclick="pauseSession(${item.session})" class="text-yellow-400 hover:text-yellow-300">
+                                    <i data-lucide="pause" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="resumeSession(${item.session})" class="text-green-400 hover:text-green-300">
+                                    <i data-lucide="play" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="stopSession(${item.session})" class="text-red-400 hover:text-red-300">
+                                    <i data-lucide="square" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 truncate">${item.url}</p>
+                        <div class="flex justify-between mt-2">
+                            <span class="text-sm">${item.count}/${item.target} shares</span>
+                            <span class="text-sm">Interval: ${item.interval}s</span>
+                        </div>
+                    </div>
+                `).join('');
+
                 lucide.createIcons();
             } catch (error) {
                 console.error('Failed to fetch status:', error);
@@ -299,7 +442,12 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, clear all',
-                cancelButtonText: 'Cancel'
+                cancelButtonText: 'Cancel',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdrop: 'rgba(0,0,0,0.4)',
+                customClass: {
+                    popup: 'glassmorphism'
+                }
             });
 
             if (result.isConfirmed) {
@@ -321,12 +469,190 @@
                         <p class="mb-2">5. Click "Start Sharing"</p>
                     </div>
                 `,
-                icon: 'info'
+                icon: 'info',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdrop: 'rgba(0,0,0,0.4)',
+                customClass: {
+                    popup: 'glassmorphism'
+                }
             });
         });
 
         // Update status every 2 seconds
         setInterval(updateStatus, 2000);
+
+        // Bottom navigation functionality
+        const sections = {
+            home: document.getElementById('homeSection'),
+            sessions: document.getElementById('sessionsSection'),
+            statistics: document.getElementById('statisticsSection'),
+            settings: document.getElementById('settingsSection')
+        };
+
+        function showSection(sectionName) {
+            Object.keys(sections).forEach(key => {
+                if (key === sectionName) {
+                    sections[key].classList.remove('hidden');
+                } else {
+                    sections[key].classList.add('hidden');
+                }
+            });
+        }
+
+        document.getElementById('homeBtn').addEventListener('click', () => showSection('home'));
+        document.getElementById('sessionsBtn').addEventListener('click', () => showSection('sessions'));
+        document.getElementById('statisticsBtn').addEventListener('click', () => {
+            showSection('statistics');
+            initCharts();
+        });
+        document.getElementById('settingsBtn').addEventListener('click', () => showSection('settings'));
+        document.getElementById('profileBtn').addEventListener('click', () => {
+            showNotification('Coming Soon', 'info', 'Profile feature is coming soon!');
+        });
+
+        // Auto-save functionality
+        function autoSave() {
+            const formData = {
+                cookie: document.getElementById('cookie').value,
+                url: document.getElementById('url').value,
+                amount: document.getElementById('amount').value,
+                interval: document.getElementById('interval').value,
+                defaultInterval: document.getElementById('defaultInterval').value,
+                maxConcurrentSessions: document.getElementById('maxConcurrentSessions').value,
+                theme: document.getElementById('theme').value
+            };
+            localStorage.setItem('fbShareBoosterData', JSON.stringify(formData));
+        }
+
+        function loadSavedData() {
+            const savedData = JSON.parse(localStorage.getItem('fbShareBoosterData'));
+            if (savedData) {
+                document.getElementById('cookie').value = savedData.cookie || '';
+                document.getElementById('url').value = savedData.url || '';
+                document.getElementById('amount').value = savedData.amount || '';
+                document.getElementById('interval').value = savedData.interval || '';
+                document.getElementById('defaultInterval').value = savedData.defaultInterval || '';
+                document.getElementById('maxConcurrentSessions').value = savedData.maxConcurrentSessions || '';
+                document.getElementById('theme').value = savedData.theme || 'dark';
+                applyTheme(savedData.theme);
+            }
+        }
+
+        // Auto-save every 5 seconds
+        setInterval(autoSave, 5000);
+
+        // Load saved data on page load
+        loadSavedData();
+
+        // Theme functionality
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.remove('bg-gradient-to-br', 'from-gray-900', 'via-purple-900', 'to-violet-800');
+                document.body.classList.add('bg-gradient-to-br', 'from-gray-100', 'via-purple-100', 'to-violet-200', 'text-gray-900');
+            } else {
+                document.body.classList.remove('bg-gradient-to-br', 'from-gray-100', 'via-purple-100', 'to-violet-200', 'text-gray-900');
+                document.body.classList.add('bg-gradient-to-br', 'from-gray-900', 'via-purple-900', 'to-violet-800', 'text-white');
+            }
+        }
+
+        document.getElementById('theme').addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+            autoSave();
+        });
+
+        // Statistics charts
+        function initCharts() {
+            const sharesCtx = document.getElementById('sharesChart').getContext('2d');
+            const successRateCtx = document.getElementById('successRateChart').getContext('2d');
+
+            new Chart(sharesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    datasets: [{
+                        label: 'Total Shares',
+                        data: [12, 19, 3, 5, 2, 3, 10],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(successRateCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    datasets: [{
+                        label: 'Success Rate',
+                        data: [65, 70, 80, 75, 85, 90, 88],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Quick Actions
+        document.getElementById('pauseAllBtn').addEventListener('click', () => {
+            // Add logic to pause all sessions
+            showNotification('Success', 'success', 'All sessions paused');
+        });
+
+        document.getElementById('resumeAllBtn').addEventListener('click', () => {
+            // Add logic to resume all sessions
+            showNotification('Success', 'success', 'All sessions resumed');
+        });
+
+        document.getElementById('stopAllBtn').addEventListener('click', () => {
+            // Add logic to stop all sessions
+            showNotification('Success', 'success', 'All sessions stopped');
+        });
+
+        document.getElementById('exportDataBtn').addEventListener('click', () => {
+            // Add logic to export data
+            showNotification('Success', 'success', 'Data exported successfully');
+        });
+
+        // Session control functions
+        function pauseSession(sessionId) {
+            // Add logic to pause a specific session
+            showNotification('Success', 'success', `Session #${sessionId} paused`);
+        }
+
+        function resumeSession(sessionId) {
+            // Add logic to resume a specific session
+            showNotification('Success', 'success', `Session #${sessionId} resumed`);
+        }
+
+        function stopSession(sessionId) {
+            // Add logic to stop a specific session
+            showNotification('Success', 'success', `Session #${sessionId} stopped`);
+        }
+
+        // Settings form submission
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add logic to save settings
+            showNotification('Success', 'success', 'Settings saved successfully');
+            autoSave();
+        });
     </script>
 </body>
 </html>

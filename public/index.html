@@ -119,27 +119,95 @@
         .status-card:hover {
             transform: translateY(-2px);
         }
+        .bottom-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bottom-nav-item {
+            transition: all 0.3s ease;
+        }
+        .bottom-nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .dark .bottom-nav {
+            background: rgba(3, 7, 18, 0.8);
+        }
+        .footer {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(3, 7, 18, 0.8) 100%);
+        }
+        .dark {
+            background: linear-gradient(135deg, #020617 0%, #000000 100%);
+        }
+        .progress-ring__circle {
+            transition: 0.35s stroke-dashoffset;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="text-white custom-scrollbar">
-    <div class="max-w-5xl mx-auto p-6">
-        <!-- Header -->
-        <header class="flex items-center justify-between py-8">
+<body class="text-white custom-scrollbar transition-colors">
+    <header class="sticky top-0 z-50 glass-effect py-4 px-6 mb-8">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="share" class="w-7 h-7"></i>
+                <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="share" class="w-6 h-6"></i>
                 </div>
-                <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-blue-500 bg-clip-text text-transparent">
+                <h1 class="text-2xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-blue-500 bg-clip-text text-transparent">
                     FBSHAREBOOSTER
                 </h1>
             </div>
-            <div class="flex items-center space-x-4">
-                <div class="glass-effect p-3 rounded-xl relative hover:bg-opacity-80 transition-all cursor-pointer">
+            <div class="hidden md:flex items-center space-x-4">
+                <button class="glass-effect p-2 rounded-xl hover:bg-opacity-80 transition-all">
                     <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
-                    <span class="absolute -top-2 -right-2 bg-indigo-500 text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg" id="activeSessionsCount">0</span>
+                </button>
+                <button class="glass-effect p-2 rounded-xl hover:bg-opacity-80 transition-all">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <button id="mobileMenuBtn" class="md:hidden glass-effect p-2 rounded-xl hover:bg-opacity-80 transition-all">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="glass-effect w-64 h-full p-6 flex flex-col">
+            <button id="closeMobileMenu" class="self-end mb-6">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors mb-4">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors mb-4">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Overall Progress -->
+        <div class="mt-8 glass-effect rounded-xl p-6 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <svg class="progress-ring" width="60" height="60">
+                    <circle class="progress-ring__circle" stroke="#6366f1" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-semibold">Overall Progress</h3>
+                    <p class="text-gray-400" id="overallProgressText">0%</p>
                 </div>
             </div>
-        </header>
+            <div class="text-right">
+                <p class="text-2xl font-bold" id="overallShareCount">0</p>
+                <p class="text-gray-400">Total Shares</p>
+            </div>
+        </div>
 
         <!-- Important Notice -->
         <div class="mt-8 glass-effect rounded-xl p-6 border-l-4 border-indigo-500">
@@ -149,27 +217,49 @@
         </div>
 
         <!-- Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <div class="glass-effect rounded-xl p-6 stat-card">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-gray-300 font-medium">Total Shares</h3>
                     <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
                 </div>
-                <p class="text-4xl font-bold text-white" id="totalShares">0</p>
+                <p class="text-3xl md:text-4xl font-bold text-white" id="totalShares">0</p>
             </div>
             <div class="glass-effect rounded-xl p-6 stat-card">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-gray-300 font-medium">Active Sessions</h3>
                     <i data-lucide="activity" class="w-5 h-5 text-indigo-400"></i>
                 </div>
-                <p class="text-4xl font-bold text-white" id="activeSessions">0</p>
+                <p class="text-3xl md:text-4xl font-bold text-white" id="activeSessions">0</p>
             </div>
-            <div class="glass-effect rounded-xl p-6 stat-card">
+            <div class="glass-effect rounded-xl p-6 stat-card sm:col-span-2 lg:col-span-1">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-gray-300 font-medium">Success Rate</h3>
                     <i data-lucide="percent" class="w-5 h-5 text-blue-400"></i>
                 </div>
-                <p class="text-4xl font-bold text-white" id="successRate">0%</p>
+                <p class="text-3xl md:text-4xl font-bold text-white" id="successRate">0%</p>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-semibold mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <button class="glass-effect p-4 rounded-xl hover:bg-opacity-80 transition-all flex flex-col items-center justify-center">
+                    <i data-lucide="pause" class="w-8 h-8 mb-2"></i>
+                    <span class="text-sm">Pause All</span>
+                </button>
+                <button class="glass-effect p-4 rounded-xl hover:bg-opacity-80 transition-all flex flex-col items-center justify-center">
+                    <i data-lucide="play" class="w-8 h-8 mb-2"></i>
+                    <span class="text-sm">Resume All</span>
+                </button>
+                <button class="glass-effect p-4 rounded-xl hover:bg-opacity-80 transition-all flex flex-col items-center justify-center">
+                    <i data-lucide="refresh-cw" class="w-8 h-8 mb-2"></i>
+                    <span class="text-sm">Retry Failed</span>
+                </button>
+                <button class="glass-effect p-4 rounded-xl hover:bg-opacity-80 transition-all flex flex-col items-center justify-center">
+                    <i data-lucide="x-circle" class="w-8 h-8 mb-2"></i>
+                    <span class="text-sm">Cancel All</span>
+                </button>
             </div>
         </div>
 
@@ -233,6 +323,33 @@
             <div id="statusList" class="space-y-4"></div>
         </div>
     </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bottom-nav py-2 px-4 z-50">
+        <div class="max-w-5xl mx-auto flex justify-around items-center">
+            <a href="#" class="bottom-nav-item flex flex-col items-center p-2 rounded-lg">
+                <i data-lucide="home" class="w-6 h-6 mb-1"></i>
+                <span class="text-xs hidden sm:inline">Home</span>
+            </a>
+            <a href="#" class="bottom-nav-item flex flex-col items-center p-2 rounded-lg">
+                <i data-lucide="bar-chart-2" class="w-6 h-6 mb-1"></i>
+                <span class="text-xs hidden sm:inline">Analytics</span>
+            </a>
+            <a href="#" class="bottom-nav-item flex flex-col items-center p-2 rounded-lg">
+                <i data-lucide="settings" class="w-6 h-6 mb-1"></i>
+                <span class="text-xs hidden sm:inline">Settings</span>
+            </a>
+            <button id="darkModeToggle" class="bottom-nav-item flex flex-col items-center p-2 rounded-lg">
+                <i data-lucide="moon" class="w-6 h-6 mb-1"></i>
+                <span class="text-xs hidden sm:inline">Dark Mode</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="footer text-center py-4 mt-12">
+        <p class="text-sm text-gray-400">POWERED BY YURI EVISU</p>
+    </footer>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
@@ -386,6 +503,11 @@
                     </div>
                 `).join('');
                 lucide.createIcons();
+
+                // Add this at the end of the function
+                const overallProgress = totalTarget ? Math.round((totalShares / totalTarget) * 100) : 0;
+                updateProgressBar(overallProgress);
+                document.getElementById('overallShareCount').textContent = totalShares;
             } catch (error) {
                 console.error('Failed to fetch status:', error);
             }
@@ -415,6 +537,53 @@
 
         window.addEventListener('offline', () => {
             showToast('Connection lost', 'error');
+        });
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        if (isDarkMode) {
+            body.classList.add('dark');
+            darkModeToggle.querySelector('i').setAttribute('data-lucide', 'sun');
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            darkModeToggle.querySelector('i').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        // Update progress bar
+        function updateProgressBar(progress) {
+            const circle = document.querySelector('.progress-ring__circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference - (progress / 100) * circumference;
+            document.getElementById('overallProgressText').textContent = `${progress}%`;
+        }
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+        });
+
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                mobileMenu.classList.add('hidden');
+            }
         });
     </script>
 </body>

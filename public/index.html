@@ -374,15 +374,14 @@
             };
 
             try {
-                // Simulating API call
-                // const response = await fetch('/api/submit', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify(formData)
-                // });
-                // const data = await response.json();
+                 const response = await fetch('/api/submit', {
+                    method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify(formData)
+                 });
+                 const data = await response.json();
 
                 // Start sharing process
                 const sessionId = startSharing(formData);

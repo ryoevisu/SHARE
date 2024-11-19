@@ -66,7 +66,7 @@
             <!-- Home Section -->
             <div id="homeSection" class="mb-8">
                 <!-- Stats Overview -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="glassmorphism rounded-2xl p-6">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-lg font-semibold text-gray-300">Total Shares</h3>
@@ -87,6 +87,39 @@
                             <i data-lucide="percent" class="w-6 h-6 text-pink-400"></i>
                         </div>
                         <p class="text-4xl font-bold" id="successRate">0%</p>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-300">Avg. Share Time</h3>
+                            <i data-lucide="clock" class="w-6 h-6 text-yellow-400"></i>
+                        </div>
+                        <p class="text-4xl font-bold" id="avgShareTime">0s</p>
+                    </div>
+                </div>
+
+                <!-- Web Monitoring -->
+                <div class="glassmorphism rounded-2xl p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Web Monitoring</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-300 mb-2">Uptime</h4>
+                            <p class="text-2xl font-bold" id="uptime">0d 0h 0m</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-300 mb-2">Web Status</h4>
+                            <p class="text-2xl font-bold flex items-center" id="webStatus">
+                                <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                                Online
+                            </p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-300 mb-2">Response Time</h4>
+                            <p class="text-2xl font-bold" id="responseTime">0ms</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-300 mb-2">Last Check</h4>
+                            <p class="text-2xl font-bold" id="lastCheck">N/A</p>
+                        </div>
                     </div>
                 </div>
 
@@ -227,6 +260,31 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Info Section -->
+            <div id="infoSection" class="hidden mb-8">
+                <h2 class="text-2xl font-semibold mb-6">Information</h2>
+                <div class="glassmorphism rounded-2xl p-6">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">About FBSHAREBOOSTER</h3>
+                            <p class="text-sm text-gray-400">FBSHAREBOOSTER is a powerful tool designed to automate and optimize your Facebook sharing process. It provides advanced features for managing multiple sharing sessions, monitoring performance, and analyzing results.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">Version</h3>
+                            <p class="text-sm text-gray-400" id="versionInfo">v1.0.0</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">Last Updated</h3>
+                            <p class="text-sm text-gray-400" id="lastUpdated">2023-05-20</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-300 mb-2">Support</h3>
+                            <p class="text-sm text-gray-400">For support, please contact us at <a href="mailto:support@fbsharebooster.com" class="text-indigo-400 hover:text-indigo-300">support@fbsharebooster.com</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -250,9 +308,9 @@
                     <i data-lucide="settings" class="w-6 h-6 mb-1"></i>
                     <span class="text-xs">Settings</span>
                 </button>
-                <button id="profileBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
-                    <i data-lucide="user" class="w-6 h-6 mb-1"></i>
-                    <span class="text-xs">Profile</span>
+                <button id="infoBtn" class="flex flex-col items-center justify-center text-gray-300 hover:text-white">
+                    <i data-lucide="info" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs">Info</span>
                 </button>
             </div>
         </div>
@@ -363,14 +421,20 @@
                 
                 let totalShares = 0;
                 let totalTarget = 0;
+                let totalTime = 0;
                 data.forEach(item => {
                     totalShares += item.count;
                     totalTarget += item.target;
+                    totalTime += item.count * item.interval;
                 });
                 
                 document.getElementById('totalShares').textContent = totalShares;
                 document.getElementById('successRate').textContent = 
                     totalTarget ? `${Math.round((totalShares / totalTarget) * 100)}%` : '0%';
+                
+                // Calculate and update average share time
+                const avgShareTime = totalShares ? Math.round(totalTime / totalShares) : 0;
+                document.getElementById('avgShareTime').textContent = `${avgShareTime}s`;
 
                 statusList.innerHTML = data.map(item => `
                     <div class="glassmorphism p-4 rounded-xl slide-in">
@@ -486,7 +550,8 @@
             home: document.getElementById('homeSection'),
             sessions: document.getElementById('sessionsSection'),
             statistics: document.getElementById('statisticsSection'),
-            settings: document.getElementById('settingsSection')
+            settings: document.getElementById('settingsSection'),
+            info: document.getElementById('infoSection')
         };
 
         function showSection(sectionName) {
@@ -506,9 +571,7 @@
             initCharts();
         });
         document.getElementById('settingsBtn').addEventListener('click', () => showSection('settings'));
-        document.getElementById('profileBtn').addEventListener('click', () => {
-            showNotification('Coming Soon', 'info', 'Profile feature is coming soon!');
-        });
+        document.getElementById('infoBtn').addEventListener('click', () => showSection('info'));
 
         // Auto-save functionality
         function autoSave() {
@@ -592,7 +655,7 @@
                     labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
                     datasets: [{
                         label: 'Success Rate',
-                        data: [65, 70, 80, 75, 85, 90, 88],
+                        data: [95, 90, 85, 92, 88, 93, 97],
                         fill: false,
                         borderColor: 'rgb(75, 192, 192)',
                         tension: 0.1
@@ -609,50 +672,89 @@
             });
         }
 
-        // Quick Actions
-        document.getElementById('pauseAllBtn').addEventListener('click', () => {
-            // Add logic to pause all sessions
-            showNotification('Success', 'success', 'All sessions paused');
-        });
-
-        document.getElementById('resumeAllBtn').addEventListener('click', () => {
-            // Add logic to resume all sessions
-            showNotification('Success', 'success', 'All sessions resumed');
-        });
-
-        document.getElementById('stopAllBtn').addEventListener('click', () => {
-            // Add logic to stop all sessions
-            showNotification('Success', 'success', 'All sessions stopped');
-        });
-
+        // Export data functionality
         document.getElementById('exportDataBtn').addEventListener('click', () => {
-            // Add logic to export data
-            showNotification('Success', 'success', 'Data exported successfully');
+            showNotification('Coming Soon', 'info', 'Export data feature is coming soon!');
         });
 
         // Session control functions
         function pauseSession(sessionId) {
-            // Add logic to pause a specific session
-            showNotification('Success', 'success', `Session #${sessionId} paused`);
+            showNotification('Coming Soon', 'info', 'Pause session feature is coming soon!');
         }
 
         function resumeSession(sessionId) {
-            // Add logic to resume a specific session
-            showNotification('Success', 'success', `Session #${sessionId} resumed`);
+            showNotification('Coming Soon', 'info', 'Resume session feature is coming soon!');
         }
 
         function stopSession(sessionId) {
-            // Add logic to stop a specific session
-            showNotification('Success', 'success', `Session #${sessionId} stopped`);
+            showNotification('Coming Soon', 'info', 'Stop session feature is coming soon!');
         }
+
+        // Quick action buttons
+        document.getElementById('pauseAllBtn').addEventListener('click', () => {
+            showNotification('Coming Soon', 'info', 'Pause all feature is coming soon!');
+        });
+
+        document.getElementById('resumeAllBtn').addEventListener('click', () => {
+            showNotification('Coming Soon', 'info', 'Resume all feature is coming soon!');
+        });
+
+        document.getElementById('stopAllBtn').addEventListener('click', () => {
+            showNotification('Coming Soon', 'info', 'Stop all feature is coming soon!');
+        });
 
         // Settings form submission
         document.getElementById('settingsForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            // Add logic to save settings
             showNotification('Success', 'success', 'Settings saved successfully');
-            autoSave();
         });
+
+        // Web Monitoring simulation
+        function updateWebMonitoring() {
+            const uptimeElement = document.getElementById('uptime');
+            const webStatusElement = document.getElementById('webStatus');
+            const responseTimeElement = document.getElementById('responseTime');
+            const lastCheckElement = document.getElementById('lastCheck');
+
+            // Simulated uptime (increases every second)
+            const currentUptime = uptimeElement.textContent.split(' ');
+            let days = parseInt(currentUptime[0]);
+            let hours = parseInt(currentUptime[1]);
+            let minutes = parseInt(currentUptime[2]);
+
+            minutes++;
+            if (minutes >= 60) {
+                hours++;
+                minutes = 0;
+            }
+            if (hours >= 24) {
+                days++;
+                hours = 0;
+            }
+
+            uptimeElement.textContent = `${days}d ${hours}h ${minutes}m`;
+
+            // Simulated web status (randomly changes between Online and Issues Detected)
+            if (Math.random() < 0.95) {
+                webStatusElement.innerHTML = '<span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>Online';
+            } else {
+                webStatusElement.innerHTML = '<span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>Issues Detected';
+            }
+
+            // Simulated response time (random between 50ms and 200ms)
+            responseTimeElement.textContent = `${Math.floor(Math.random() * 150 + 50)}ms`;
+
+            // Last check time
+            const now = new Date();
+            lastCheckElement.textContent = now.toLocaleTimeString();
+        }
+
+        // Update web monitoring every 5 seconds
+        setInterval(updateWebMonitoring, 5000);
+
+        // Initial update
+        updateStatus();
+        updateWebMonitoring();
     </script>
 </body>
 </html>

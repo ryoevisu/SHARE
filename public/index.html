@@ -3,345 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FBSPAMSHARE Pro</title>
+    <title>FBSPAMSHARE</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            /* Colors */
-            --primary: #FE2C55;
-            --primary-hover: #FF445C;
-            --secondary: #161823;
-            --accent: #00F2EA;
-            --text-primary: #161823;
-            --text-secondary: #8A8B91;
-            --bg-primary: #FFFFFF;
-            --bg-secondary: #F8F8F8;
-            --success: #52C41A;
-            --warning: #FAAD14;
-            --error: #FF4D4F;
-
-            /* Shadows */
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-
-            /* Animations */
-            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-        }
-
-        * {
-            font-family: 'Outfit', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        body {
-            background: linear-gradient(135deg, #F8F8F8 0%, #F0F0F0 100%);
-        }
-
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(22, 24, 35, 0.08);
-            box-shadow: var(--shadow-md);
-        }
-
-        .card-hover {
-            transition: var(--transition-base);
-        }
-
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .7; }
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: #F1F1F2;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-value {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-        }
-
-        .toast {
-            position: fixed;
-            right: 1rem;
-            bottom: 1rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            color: white;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-group input:focus + .input-icon,
-        .input-group textarea:focus + .input-icon {
-            color: var(--primary);
-        }
-
-        .loading-spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 640px) {
-            .container {
-                padding: 1rem;
-            }
-        }
-    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: 'var(--primary)',
-                        secondary: 'var(--secondary)',
-                        accent: 'var(--accent)',
-                    },
                     fontFamily: {
                         outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#FF2C55',
+                        secondary: '#121212',
+                        success: '#00BA88',
+                        warning: '#FFB800',
                     },
                 }
             }
         }
     </script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #E5E7EB;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-value {
+            height: 100%;
+            background: #FF2C55;
+            transition: width 0.3s ease;
+        }
+        .nav-indicator {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .session-card {
+            transition: all 0.3s ease;
+        }
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        .ripple:active:after {
+            transform: scale(0, 0);
+            opacity: .3;
+            transition: 0s;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF2C55;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff1641;
+        }
+    </style>
 </head>
-<body class="min-h-screen p-4 md:p-6">
-    <div class="max-w-4xl mx-auto">
+<body class="bg-gray-50">
+    <div class="max-w-md mx-auto min-h-screen pb-16 bg-white shadow-lg">
         <!-- Header -->
-        <div class="glassmorphism rounded-2xl p-6 mb-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="bg-primary rounded-lg p-2">
-                    <i data-lucide="share" class="w-6 h-6 text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-secondary">FBSPAMSHARE Pro</h1>
-                    <p class="text-sm text-text-secondary">Advanced Facebook Share Management</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="moon" class="w-5 h-5"></i>
-                </button>
-                <button class="p-2 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="bell" class="w-5 h-5"></i>
-                </button>
-                <button class="p-2 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-6">
-            <!-- Main Control Panel -->
-            <div class="glassmorphism rounded-2xl p-6 card-hover">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="sliders" class="w-5 h-5 text-primary"></i>
-                    Control Panel
-                </h2>
-
-                <form id="shareForm" class="space-y-6">
-                    <div class="input-group">
-                        <label class="block text-sm font-medium text-secondary mb-2">Facebook Cookies</label>
-                        <div class="relative">
-                            <textarea id="cookie" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" rows="4" placeholder="Paste your Facebook cookies here..."></textarea>
-                            <i data-lucide="key" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="block text-sm font-medium text-secondary mb-2">Post URL</label>
-                        <div class="flex gap-2">
-                            <div class="relative flex-1">
-                                <input type="text" id="url" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://facebook.com/...">
-                                <i data-lucide="link" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
-                            </div>
-                            <button type="button" class="p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-gray-50" id="pasteUrl">
-                                <i data-lucide="clipboard" class="w-5 h-5 text-secondary"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="input-group">
-                            <label class="block text-sm font-medium text-secondary mb-2">Amount</label>
-                            <div class="relative">
-                                <input type="number" id="amount" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="100" min="1">
-                                <i data-lucide="hash" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label class="block text-sm font-medium text-secondary mb-2">Interval (s)</label>
-                            <div class="relative">
-                                <input type="number" id="interval" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="5" min="1">
-                                <i data-lucide="clock" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full py-3 px-4 bg-primary hover:bg-primary-hover rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-colors duration-300">
-                        <i data-lucide="share" class="w-5 h-5"></i>
-                        <span>Start Sharing</span>
+        <header class="p-4 border-b bg-white sticky top-0 z-10 backdrop-blur-lg bg-white/90">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-semibold">FBSPAMSHARE</h1>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" id="themeToggle">
+                        <i data-lucide="moon" class="w-5 h-5"></i>
                     </button>
-                </form>
-            </div>
-
-            <!-- Status Panel -->
-            <div class="glassmorphism rounded-2xl p-6 card-hover">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-semibold flex items-center gap-2">
-                        <i data-lucide="activity" class="w-5 h-5 text-primary"></i>
-                        Active Sessions
-                    </h2>
-                    <div class="flex items-center gap-2">
-                        <span class="animate-pulse inline-block w-2 h-2 bg-success rounded-full"></span>
-                        <span class="text-sm text-success font-medium">Live</span>
-                    </div>
-                </div>
-
-                <div id="sessions" class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                    <!-- Sessions will be inserted here -->
-                </div>
-
-                <div class="mt-6 pt-4 border-t border-gray-100">
-                    <div class="flex justify-between text-sm text-gray-500 mb-2">
-                        <span>Total Shares</span>
-                        <span id="totalShares">0</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-500">
-                        <span>Active Sessions</span>
-                        <span id="activeSessions">0</span>
-                    </div>
+                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
                 </div>
             </div>
+        </header>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Home Section -->
+            <section id="home-section" class="content-section active">
+                <div class="p-4">
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl border hover:border-primary transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                                <div class="text-xs text-gray-500">Active</div>
+                            </div>
+                            <div class="text-2xl font-semibold" id="activeSessions">0</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border hover:border-primary transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="share" class="w-4 h-4 text-primary"></i>
+                                <div class="text-xs text-gray-500">Shares</div>
+                            </div>
+                            <div class="text-2xl font-semibold" id="totalShares">0</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border hover:border-primary transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="clock" class="w-4 h-4 text-primary"></i>
+                                <div class="text-xs text-gray-500">Time</div>
+                            </div>
+                            <div class="text-2xl font-semibold" id="totalTime">0m</div>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="shareForm" class="mb-6 space-y-4">
+                        <div class="relative">
+                            <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
+                                <i data-lucide="cookie" class="w-4 h-4"></i>
+                                Facebook Cookies
+                            </label>
+                            <textarea name="cookie" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" rows="3" placeholder="Paste your cookies here"></textarea>
+                        </div>
+                        <div class="relative">
+                            <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
+                                <i data-lucide="link" class="w-4 h-4"></i>
+                                Post URL
+                            </label>
+                            <input type="url" name="url" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="https://facebook.com/...">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
+                                    <i data-lucide="hash" class="w-4 h-4"></i>
+                                    Amount
+                                </label>
+                                <input type="number" name="amount" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="100">
+                            </div>
+                            <div class="relative">
+                                <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
+                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                    Interval (s)
+                                </label>
+                                <input type="number" name="interval" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="5">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors ripple flex items-center justify-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            Start Sharing
+                        </button>
+                    </form>
+
+                    <!-- Active Sessions -->
+                    <div id="sessions" class="space-y-4"></div>
+                </div>
+            </section>
+
+            <!-- Sessions Section -->
+            <section id="sessions-section" class="content-section">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="layout-list" class="w-5 h-5 text-primary"></i>
+                            <h2 class="text-lg font-semibold">All Sessions</h2>
+                        </div>
+                        <span class="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full" id="totalSessionsCount">0 sessions</span>
+                    </div>
+                    <div id="allSessions" class="space-y-4"></div>
+                </div>
+            </section>
+
+            <!-- Changelog Section -->
+            <section id="changelog-section" class="content-section">
+                <div class="p-4">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="git-branch" class="w-5 h-5 text-primary"></i>
+                        <h2 class="text-lg font-semibold">Changelog</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border-l-2 border-primary pl-4 pb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm font-medium">v1.1.0</span>
+                                <span class="text-xs text-gray-500">- November 20, 2024</span>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
+                                    Enhanced UI with modern design
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
+                                    Improved mobile responsiveness
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
+                                    Added dark mode support
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="border-l-2 border-gray-200 pl-4 pb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm font-medium">v1.0.0</span>
+                                <span class="text-xs text-gray-500">- November 15, 2024</span>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-400"></i>
+                                    Initial release
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto backdrop-blur-lg bg-white/90">
+            <div class="relative">
+                <div class="flex justify-around items-center px-6 py-2">
+                    <a href="#" data-section="home" class="nav-item flex flex-col items-center text-primary relative p-2">
+                        <i data-lucide="home" class="w-6 h-6"></i>
+                        <span class="text-xs mt-1">Home</span>
+                    </a>
+                    <a href="#" data-section="sessions" class="nav-item flex flex-col items-center text-gray-400 relative p-2">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
+                        <span class="text-xs mt-1">Sessions</span>
+                    </a>
+                    <a href="#" data-section="changelog" class="nav-item flex flex-col items-center text-gray-400 relative p-2">
+                        <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                        <span class="text-xs mt-1">Changelog</span>
+                    </a>
+                </div>
+                <div class="nav-indicator absolute bottom-0 left-0 h-0.5 bg-primary transition-transform duration-300" style="width: 33.33%"></div>
+            </div>
+        </nav>
     </div>
 
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+        // Navigation functionality
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.content-section');
+        const navIndicator = document.querySelector('.nav-indicator');
 
-        let isDarkMode = false;
+        navItems.forEach((item, index) => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.dataset.section;
+                
+                navItems.forEach(navItem => {
+                    navItem.classList.remove('text-primary');
+                    navItem.classList.add('text-gray-400');
+                });
+                item.classList.remove('text-gray-400');
+                item.classList.add('text-primary');
+
+                navIndicator.style.transform = `translateX(${index * 100}%)`;
+
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === `${sectionId}-section`) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Dark mode toggle
         const themeToggle = document.getElementById('themeToggle');
-        
+        const themeIcon = themeToggle.querySelector('i');
+        let isDarkMode = false;
+
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark');
-            themeToggle.innerHTML = isDarkMode ? 
-                '<i data-lucide="sun" class="w-5 h-5"></i>' : 
-                '<i data-lucide="moon" class="w-5 h-5"></i>';
+            document.documentElement.classList.toggle('dark');
+            themeIcon.setAttribute('data-lucide', isDarkMode ? 'sun' : 'moon');
             lucide.createIcons();
         });
 
-        // Toast notification function
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'success' ? 'bg-success' : 'bg-error'}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // Clipboard functionality
-        document.getElementById('pasteUrl').addEventListener('click', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                document.getElementById('url').value = text;
-                showToast('URL pasted successfully');
-            } catch (err) {
-                showToast('Failed to paste URL', 'error');
-            }
-        });
-
-        // Form submission
+        // Form submission with loading state
         document.getElementById('shareForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
-                <svg class="loading-spinner w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                    <path pathLength="1" d="M12 2C6.47715 2 2 6.47715 2 12" stroke-opacity="1"/>
-                </svg>
-                Processing...
-            `;
-
-            const cookie = document.getElementById('cookie').value;
-            const url = document.getElementById('url').value;
-            const amount = parseInt(document.getElementById('amount').value);
-            const interval = parseInt(document.getElementById('interval').value);
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalContent = submitButton.innerHTML;
 
             try {
+                submitButton.innerHTML = `
+                    <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+                    Processing...
+                `;
+                lucide.createIcons();
+
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
                 const response = await fetch('/api/submit', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cookie, url, amount, interval }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 });
 
-                const data = await response.json();
-                if (data.status === 200) {
-                    showToast('Share session started successfully');
-                    updateSessions();
-                } else {
-                    showToast(data.error || 'An error occurred', 'error');
+                if (!response.ok) {
+                    throw new Error('Failed to start sharing');
                 }
+
+                e.target.reset();
             } catch (error) {
-                showToast('Failed to start sharing', 'error');
+                console.error('Error:', error);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `
-                    <i data-lucide="share" class="w-5 h-5"></i>
-                    <span>Start Sharing</span>
-                `;
+                submitButton.innerHTML = originalContent;
                 lucide.createIcons();
             }
         });
 
-        // Update sessions with enhanced UI
+        // Enhanced session updates with animations
         async function updateSessions() {
             try {
                 const response = await fetch('/total');
                 const sessions = await response.json();
                 
-                const sessionsContainer = document.getElementById('sessions');
                 document.getElementById('activeSessions').textContent = sessions.length;
                 document.getElementById('totalShares').textContent = sessions.reduce((acc, session) => acc + session.count, 0);
+                document.getElementById('totalSessionsCount').textContent = `${sessions.length} sessions`;
                 
-                sessionsContainer.innerHTML = sessions.map(session => `
-                    <div class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                const sessionTemplate = session => `
+                    <div class="session-card p-4 bg-white rounded-lg border hover:border-primary transition-all">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -361,12 +385,23 @@
                         </div>
                         <div class="flex items-center justify-between mt-3">
                             <div class="text-sm text-secondary truncate max-w-[200px]">${session.url}</div>
-                            <div class="text-xs text-gray-500">
+                            <div class="text-xs bg-gray-100 px-2 py-1 rounded-full">
                                 ${Math.round((session.count / session.target) * 100)}% Complete
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `;
+                
+                const containers = [
+                    document.getElementById('sessions'),
+                    document.getElementById('allSessions')
+                ];
+
+                containers.forEach(container => {
+                    if (container) {
+                        container.innerHTML = sessions.map(sessionTemplate).join('');
+                    }
+                });
                 
                 lucide.createIcons();
             } catch (error) {
@@ -374,8 +409,8 @@
             }
         }
 
-        // Update sessions every second
         setInterval(updateSessions, 1000);
+        lucide.createIcons();
     </script>
 </body>
 </html>

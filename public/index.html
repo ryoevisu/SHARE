@@ -1,381 +1,381 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FBSPAMSHARE Beta</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>FBSPAMSHARE Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
+        :root {
+            /* Colors */
+            --primary: #FE2C55;
+            --primary-hover: #FF445C;
+            --secondary: #161823;
+            --accent: #00F2EA;
+            --text-primary: #161823;
+            --text-secondary: #8A8B91;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F8F8;
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #FF4D4F;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+            /* Animations */
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        * {
             font-family: 'Outfit', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .active-tab {
-            color: #1877F2;
+
+        body {
+            background: linear-gradient(135deg, #F8F8F8 0%, #F0F0F0 100%);
         }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(22, 24, 35, 0.08);
+            box-shadow: var(--shadow-md);
         }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        .card-hover {
+            transition: var(--transition-base);
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
-        .animate-pulse-slow {
+
+        .animate-pulse {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #F1F1F2;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .toast {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input:focus + .input-icon,
+        .input-group textarea:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+        }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        accent: 'var(--accent)',
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-[#F0F2F5] dark:bg-gray-900 h-full">
-    <!-- Header -->
-    <header class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-sm z-50">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <h1 class="text-2xl font-bold text-[#1877F2]">FBSPAMSHARE</h1>
-                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-100">BETA</span>
+<body class="min-h-screen p-4 md:p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="glassmorphism rounded-2xl p-6 mb-8 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary rounded-lg p-2">
+                    <i data-lucide="share" class="w-6 h-6 text-white"></i>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <button id="statsButton" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i data-lucide="bar-chart-2" class="w-5 h-5 dark:text-white"></i>
+                <div>
+                    <h1 class="text-2xl font-bold text-secondary">FBSPAMSHARE Pro</h1>
+                    <p class="text-sm text-text-secondary">Advanced Facebook Share Management</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <button class="p-2 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                </button>
+                <button class="p-2 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Main Control Panel -->
+            <div class="glassmorphism rounded-2xl p-6 card-hover">
+                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-5 h-5 text-primary"></i>
+                    Control Panel
+                </h2>
+
+                <form id="shareForm" class="space-y-6">
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-secondary mb-2">Facebook Cookies</label>
+                        <div class="relative">
+                            <textarea id="cookie" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" rows="4" placeholder="Paste your Facebook cookies here..."></textarea>
+                            <i data-lucide="key" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-secondary mb-2">Post URL</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <input type="text" id="url" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://facebook.com/...">
+                                <i data-lucide="link" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <button type="button" class="p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-gray-50" id="pasteUrl">
+                                <i data-lucide="clipboard" class="w-5 h-5 text-secondary"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-secondary mb-2">Amount</label>
+                            <div class="relative">
+                                <input type="number" id="amount" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="100" min="1">
+                                <i data-lucide="hash" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-secondary mb-2">Interval (s)</label>
+                            <div class="relative">
+                                <input type="number" id="interval" class="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="5" min="1">
+                                <i data-lucide="clock" class="input-icon absolute right-3 top-3 w-5 h-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full py-3 px-4 bg-primary hover:bg-primary-hover rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-colors duration-300">
+                        <i data-lucide="share" class="w-5 h-5"></i>
+                        <span>Start Sharing</span>
                     </button>
-                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-white"></i>
-                    </button>
-                </div>
+                </form>
             </div>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 pt-20 pb-24">
-        <!-- Home Tab -->
-        <div id="homeTab" class="space-y-6">
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-blue-100 rounded-lg dark:bg-blue-900">
-                            <i data-lucide="share" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm text-gray-500 dark:text-gray-400">Total Shares</h3>
-                            <p class="text-xl font-semibold dark:text-white" id="totalShares">0</p>
-                        </div>
+            <!-- Status Panel -->
+            <div class="glassmorphism rounded-2xl p-6 card-hover">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold flex items-center gap-2">
+                        <i data-lucide="activity" class="w-5 h-5 text-primary"></i>
+                        Active Sessions
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span class="animate-pulse inline-block w-2 h-2 bg-success rounded-full"></span>
+                        <span class="text-sm text-success font-medium">Live</span>
                     </div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-green-100 rounded-lg dark:bg-green-900">
-                            <i data-lucide="activity" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm text-gray-500 dark:text-gray-400">Active Sessions</h3>
-                            <p class="text-xl font-semibold dark:text-white" id="activeSessions">0</p>
-                        </div>
+
+                <div id="sessions" class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                    <!-- Sessions will be inserted here -->
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between text-sm text-gray-500 mb-2">
+                        <span>Total Shares</span>
+                        <span id="totalShares">0</span>
                     </div>
-                </div>
-            </div>
-
-            <!-- Share Form -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-semibold dark:text-white">Share Boost</h2>
-                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400" id="status">Ready</span>
-                    </div>
-                    <form id="shareForm" class="space-y-4">
-                        <div class="space-y-2">
-                            <label class="flex items-center justify-between">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Facebook Cookies</span>
-                                <button type="button" id="cookieHelp" class="text-xs text-blue-600 hover:underline">
-                                    How to get cookies?
-                                </button>
-                            </label>
-                            <textarea id="cookies" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" rows="4" placeholder="Paste your Facebook cookies here"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Post URL</label>
-                            <input type="url" id="postUrl" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="https://facebook.com/...">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
-                                <div class="relative">
-                                    <input type="number" id="amount" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12" placeholder="100">
-                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">shares</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Interval</label>
-                                <div class="relative">
-                                    <input type="number" id="interval" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12" placeholder="5">
-                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">sec</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-[#1877F2] text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
-                            <i data-lucide="play" class="w-5 h-5"></i>
-                            <span>Start Sharing</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Active Sessions Tab -->
-        <div id="sessionsTab" class="hidden space-y-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b dark:border-gray-700">
-                    <h2 class="text-lg font-semibold dark:text-white">Active Sessions</h2>
-                </div>
-                <div id="activeSessionsList" class="divide-y dark:divide-gray-700">
-                    <!-- Sessions will be dynamically added here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Changelog Tab -->
-        <div id="changelogTab" class="hidden">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div class="p-4 border-b dark:border-gray-700">
-                    <h2 class="text-lg font-semibold dark:text-white">Changelog</h2>
-                </div>
-                <div class="p-6 space-y-6">
-                    <div class="space-y-4">
-                        <div class="border-l-4 border-blue-500 pl-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-semibold text-gray-900 dark:text-white">Version 1.1.0</span>
-                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-100">Latest</span>
-                            </div>
-                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                <p>• Improved UI design</p>
-                                <p>• Added real-time statistics</p>
-                                <p>• Enhanced session management</p>
-                                <p>• Added dark mode support</p>
-                                <p>• Added cookie helper guide</p>
-                            </div>
-                        </div>
-                        <div class="border-l-4 border-gray-300 pl-4">
-                            <div class="text-sm font-semibold text-gray-900 dark:text-white">Version 1.0.0</div>
-                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                <p>• Initial release</p>
-                                <p>• Basic share boost functionality</p>
-                                <p>• Basic session tracking</p>
-                            </div>
-                        </div>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Active Sessions</span>
+                        <span id="activeSessions">0</span>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 w-full bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-lg">
-        <div class="container mx-auto">
-            <div class="flex justify-around py-2">
-                <button onclick="switchTab('home')" class="flex flex-col items-center space-y-1 active-tab p-2">
-                    <i data-lucide="home" class="w-6 h-6"></i>
-                    <span class="text-xs font-medium">Home</span>
-                </button>
-                <button onclick="switchTab('sessions')" class="flex flex-col items-center space-y-1 text-gray-500 dark:text-gray-400 p-2">
-                    <i data-lucide="activity" class="w-6 h-6"></i>
-                    <span class="text-xs font-medium">Sessions</span>
-                </button>
-                <button onclick="switchTab('changelog')" class="flex flex-col items-center space-y-1 text-gray-500 dark:text-gray-400 p-2">
-                    <i data-lucide="clipboard-list" class="w-6 h-6"></i>
-                    <span class="text-xs font-medium">Changelog</span>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+    </div>
 
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Theme handling
+        let isDarkMode = false;
         const themeToggle = document.getElementById('themeToggle');
-        if (localStorage.theme === 'dark' || (!localStorage.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-
+        
         themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark');
+            themeToggle.innerHTML = isDarkMode ? 
+                '<i data-lucide="sun" class="w-5 h-5"></i>' : 
+                '<i data-lucide="moon" class="w-5 h-5"></i>';
+            lucide.createIcons();
         });
 
-        // Toast notification
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'success' ? 'bg-success' : 'bg-error'}`;
             toast.textContent = message;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
+            document.body.appendChild(toast);
             
-            if (type === 'error') {
-                toast.classList.add('bg-red-500');
-            } else if (type === 'success') {
-                toast.classList.add('bg-green-500');
-            }
-
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
+                toast.remove();
             }, 3000);
         }
 
-        // Cookie helper
-        document.getElementById('cookieHelp').addEventListener('click', () => {
-            Swal.fire({
-                title: 'How to get Facebook cookies',
-                html: `
-                    <ol class="text-left text-sm space-y-2">
-                        <li>1. Open Facebook in Chrome</li>
-                        <li>2. Press F12 to open DevTools</li>
-                        <li>3. Go to Application tab</li>
-                        <li>4. Click on Cookies</li>
-                        <li>5. Copy all cookies data</li>
-                    </ol>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Got it!',
-                confirmButtonColor: '#1877F2'
-            });
+        // Clipboard functionality
+        document.getElementById('pasteUrl').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('url').value = text;
+                showToast('URL pasted successfully');
+            } catch (err) {
+                showToast('Failed to paste URL', 'error');
+            }
         });
 
-        // Tab switching
-        function switchTab(tab) {
-            const tabs = ['home', 'sessions', 'changelog'];
-            tabs.forEach(t => {
-                document.getElementById(`${t}Tab`).classList.add('hidden');
-                document.querySelector(`[onclick="switchTab('${t}')"]`).classList.remove('active-tab');
-                document.querySelector(`[onclick="switchTab('${t}')"]`).classList.add('text-gray-500', 'dark:text-gray-400');
-            });
-            document.getElementById(`${tab}Tab`).classList.remove('hidden');
-            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active-tab');
-            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.remove('text-gray-500', 'dark:text-gray-400');
-        }
-
-        // Form handling
+        // Form submission
         document.getElementById('shareForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const status = document.getElementById('status');
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            
-            status.textContent = 'Processing...';
-            submitButton.disabled = true;
-            
-            const formData = {
-                cookie: document.getElementById('cookies').value,
-                url: document.getElementById('postUrl').value,
-                amount: document.getElementById('amount').value,
-                interval: document.getElementById('interval').value
-            };
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="loading-spinner w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                    <path pathLength="1" d="M12 2C6.47715 2 2 6.47715 2 12" stroke-opacity="1"/>
+                </svg>
+                Processing...
+            `;
+
+            const cookie = document.getElementById('cookie').value;
+            const url = document.getElementById('url').value;
+            const amount = parseInt(document.getElementById('amount').value);
+            const interval = parseInt(document.getElementById('interval').value);
 
             try {
                 const response = await fetch('/api/submit', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cookie, url, amount, interval }),
                 });
 
-                if (response.ok) {
-                    showToast('Share boost started successfully!', 'success');
-                    switchTab('sessions');
+                const data = await response.json();
+                if (data.status === 200) {
+                    showToast('Share session started successfully');
                     updateSessions();
-                    status.textContent = 'Ready';
                 } else {
-                    const error = await response.json();
-                    showToast(`Error: ${error.error}`, 'error');
-                    status.textContent = 'Error';
+                    showToast(data.error || 'An error occurred', 'error');
                 }
             } catch (error) {
-                showToast('An error occurred. Please try again.', 'error');
-                status.textContent = 'Error';
+                showToast('Failed to start sharing', 'error');
             } finally {
-                submitButton.disabled = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <i data-lucide="share" class="w-5 h-5"></i>
+                    <span>Start Sharing</span>
+                `;
+                lucide.createIcons();
             }
         });
 
-        // Session management
-        function updateSessionsList(sessions) {
-            const container = document.getElementById('activeSessionsList');
-            document.getElementById('activeSessions').textContent = sessions.length;
-            
-            if (sessions.length === 0) {
-                container.innerHTML = `
-                    <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-4"></i>
-                        <p>No active sessions</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = sessions.map(session => `
-                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center space-x-2">
-                            <h3 class="font-medium dark:text-white">Session ${session.session}</h3>
-                            <div class="flex items-center space-x-1">
-                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse-slow"></span>
-                                <span class="text-xs text-green-500">Active</span>
-                            </div>
-                        </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">${session.count}/${session.target} shares</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-2">
-                        <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: ${(session.count/session.target)*100}%"></div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 truncate flex-1 mr-4">${session.url}</div>
-                        <button onclick="cancelSession(${session.id})" class="text-red-500 hover:text-red-600 text-sm font-medium">Cancel</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            lucide.createIcons();
-        }
-
-        let totalSharesCount = 0;
+        // Update sessions with enhanced UI
         async function updateSessions() {
             try {
                 const response = await fetch('/total');
                 const sessions = await response.json();
-                totalSharesCount = sessions.reduce((acc, session) => acc + session.count, 0);
-                document.getElementById('totalShares').textContent = totalSharesCount;
-                updateSessionsList(sessions);
+                
+                const sessionsContainer = document.getElementById('sessions');
+                document.getElementById('activeSessions').textContent = sessions.length;
+                document.getElementById('totalShares').textContent = sessions.reduce((acc, session) => acc + session.count, 0);
+                
+                sessionsContainer.innerHTML = sessions.map(session => `
+                    <div class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <i data-lucide="share-2" class="w-4 h-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-secondary">Session ${session.session}</div>
+                                    <div class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</div>
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium ${session.count >= session.target ? 'text-success' : 'text-primary'}">
+                                ${session.count}/${session.target}
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-value" style="width: ${(session.count / session.target) * 100}%"></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <div class="text-sm text-secondary truncate max-w-[200px]">${session.url}</div>
+                            <div class="text-xs text-gray-500">
+                                ${Math.round((session.count / session.target) * 100)}% Complete
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                lucide.createIcons();
             } catch (error) {
-                console.error('Error updating sessions:', error);
+                console.error('Failed to update sessions:', error);
             }
         }
 
-        async function cancelSession(id) {
-            try {
-                const response = await fetch(`/api/cancel/${id}`, { method: 'POST' });
-                if (response.ok) {
-                    showToast('Session cancelled successfully', 'success');
-                    updateSessions();
-                }
-            } catch (error) {
-                showToast('Error cancelling session', 'error');
-            }
-        }
-
-        // Initialize
-        updateSessions();
-        setInterval(updateSessions, 3000);
+        // Update sessions every second
+        setInterval(updateSessions, 1000);
     </script>
 </body>
 </html>

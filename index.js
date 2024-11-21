@@ -6,17 +6,15 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files like CSS, JS, and assets
+app.use(express.static(path.join(__dirname, 'public')));
 
 const total = new Map();
 
-// Serve index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Fetch session data
-app.get('/total', (req, res) => {
+app.get('/api/sessions', (req, res) => {
   const data = Array.from(total.values()).map((link, index) => ({
     session: index + 1,
     url: link.url,
@@ -27,12 +25,13 @@ app.get('/total', (req, res) => {
   res.json(data || []);
 });
 
-// Submit boost request
 app.post('/api/submit', async (req, res) => {
-  const { cookie, url, amount, interval } = req.body;
+  const { cookie, url } = req.body;
+  const amount = 1000;
+  const interval = 1;
 
-  if (!cookie || !url || !amount || !interval) {
-    return res.status(400).json({ error: 'Missing cookie, url, amount, or interval' });
+  if (!cookie || !url) {
+    return res.status(400).json({ error: 'Missing cookie or url' });
   }
 
   try {
@@ -48,7 +47,6 @@ app.post('/api/submit', async (req, res) => {
   }
 });
 
-// Share functionality
 async function share(cookies, url, amount, interval) {
   const id = await getPostID(url);
   const accessToken = await getAccessToken(cookies);
@@ -91,6 +89,7 @@ async function share(cookies, url, amount, interval) {
         clearInterval(timer);
       }
     } catch (error) {
+      console.error('Error sharing post:', error);
       clearInterval(timer);
       total.delete(postId);
     }
@@ -104,7 +103,6 @@ async function share(cookies, url, amount, interval) {
   }, amount * interval * 1000);
 }
 
-// Get Facebook post ID
 async function getPostID(url) {
   try {
     const response = await axios.post(
@@ -116,11 +114,11 @@ async function getPostID(url) {
     );
     return response.data.id;
   } catch (error) {
+    console.error('Error getting post ID:', error);
     return null;
   }
 }
 
-// Get Facebook access token
 async function getAccessToken(cookie) {
   try {
     const headers = {
@@ -135,11 +133,11 @@ async function getAccessToken(cookie) {
 
     return token ? token[1] : null;
   } catch (error) {
+    console.error('Error getting access token:', error);
     return null;
   }
 }
 
-// Convert cookies from app state format
 async function convertCookie(cookie) {
   return new Promise((resolve, reject) => {
     try {
@@ -162,8 +160,7 @@ async function convertCookie(cookie) {
   });
 }
 
-// Start server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

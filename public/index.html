@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FBSPAMSHARE</title>
+    <title>FBSPAMSHARE Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -87,7 +88,6 @@
             opacity: .3;
             transition: 0s;
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -107,27 +107,23 @@
 </head>
 <body class="bg-gray-50">
     <div class="max-w-md mx-auto min-h-screen pb-16 bg-white shadow-lg">
-        <!-- Header -->
         <header class="p-4 border-b bg-white sticky top-0 z-10 backdrop-blur-lg bg-white/90">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-semibold">FBSPAMSHARE</h1>
+                <h1 class="text-xl font-semibold">FBSPAMSHARE Pro</h1>
                 <div class="flex items-center gap-2">
                     <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" id="themeToggle">
                         <i data-lucide="moon" class="w-5 h-5"></i>
                     </button>
-                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" id="notificationToggle">
                         <i data-lucide="bell" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Content Sections -->
         <div class="content-sections">
-            <!-- Home Section -->
             <section id="home-section" class="content-section active">
                 <div class="p-4">
-                    <!-- Stats -->
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="bg-white p-4 rounded-xl border hover:border-primary transition-colors">
                             <div class="flex items-center gap-2 mb-1">
@@ -148,25 +144,24 @@
                                 <i data-lucide="clock" class="w-4 h-4 text-primary"></i>
                                 <div class="text-xs text-gray-500">Time</div>
                             </div>
-                            <div class="text-2xl font-semibold" id="totalTime">0m</div>
+                            <div class="text-2xl font-semibold" id="totalTime">00:00:00</div>
                         </div>
                     </div>
 
-                    <!-- Form -->
                     <form id="shareForm" class="mb-6 space-y-4">
                         <div class="relative">
                             <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
                                 <i data-lucide="cookie" class="w-4 h-4"></i>
                                 Facebook Cookies
                             </label>
-                            <textarea name="cookie" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" rows="3" placeholder="Paste your cookies here"></textarea>
+                            <textarea name="cookie" id="cookieInput" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" rows="3" placeholder="Paste your cookies here"></textarea>
                         </div>
                         <div class="relative">
                             <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
                                 <i data-lucide="link" class="w-4 h-4"></i>
                                 Post URL
                             </label>
-                            <input type="url" name="url" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="https://facebook.com/...">
+                            <input type="url" name="url" id="urlInput" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="https://facebook.com/...">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative">
@@ -174,14 +169,14 @@
                                     <i data-lucide="hash" class="w-4 h-4"></i>
                                     Amount
                                 </label>
-                                <input type="number" name="amount" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="100">
+                                <input type="number" name="amount" id="amountInput" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" value="1000" readonly>
                             </div>
                             <div class="relative">
                                 <label class="text-sm text-gray-600 mb-1 block flex items-center gap-2">
                                     <i data-lucide="timer" class="w-4 h-4"></i>
                                     Interval (s)
                                 </label>
-                                <input type="number" name="interval" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="5">
+                                <input type="number" name="interval" id="intervalInput" class="w-full p-3 rounded-lg border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" value="1" readonly>
                             </div>
                         </div>
                         <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors ripple flex items-center justify-center gap-2">
@@ -190,12 +185,10 @@
                         </button>
                     </form>
 
-                    <!-- Active Sessions -->
                     <div id="sessions" class="space-y-4"></div>
                 </div>
             </section>
 
-            <!-- Sessions Section -->
             <section id="sessions-section" class="content-section">
                 <div class="p-4">
                     <div class="flex items-center justify-between mb-4">
@@ -209,7 +202,25 @@
                 </div>
             </section>
 
-            <!-- Changelog Section -->
+            <section id="analytics-section" class="content-section">
+                <div class="p-4">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="bar-chart" class="w-5 h-5 text-primary"></i>
+                        <h2 class="text-lg font-semibold">Analytics</h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-sm font-medium mb-2">Share Distribution</h3>
+                            <canvas id="shareDistributionChart"></canvas>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-2">Hourly Activity</h3>
+                            <canvas id="hourlyActivityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="changelog-section" class="content-section">
                 <div class="p-4">
                     <div class="flex items-center gap-2 mb-4">
@@ -219,33 +230,41 @@
                     <div class="space-y-4">
                         <div class="border-l-2 border-primary pl-4 pb-4">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm font-medium">v1.1.0</span>
-                                <span class="text-xs text-gray-500">- November 20, 2024</span>
+                                <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm font-medium">v1.2.0</span>
+                                <span class="text-xs text-gray-500">- November 22, 2024</span>
                             </div>
                             <ul class="space-y-2 text-sm text-gray-600">
                                 <li class="flex items-center gap-2">
                                     <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
-                                    Enhanced UI with modern design
+                                    Added analytics section with share distribution and hourly activity charts
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
-                                    Improved mobile responsiveness
+                                    Implemented autosave functionality for cookies
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <i data-lucide="check-circle-2" class="w-4 h-4 text-success"></i>
-                                    Added dark mode support
+                                    Fixed amount and interval to 1000 and 1 second respectively
                                 </li>
                             </ul>
                         </div>
                         <div class="border-l-2 border-gray-200 pl-4 pb-4">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm font-medium">v1.0.0</span>
-                                <span class="text-xs text-gray-500">- November 15, 2024</span>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm font-medium">v1.1.0</span>
+                                <span class="text-xs text-gray-500">- November 20, 2024</span>
                             </div>
                             <ul class="space-y-2 text-sm text-gray-600">
                                 <li class="flex items-center gap-2">
                                     <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-400"></i>
-                                    Initial release
+                                    Enhanced UI with modern design
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-400"></i>
+                                    Improved mobile responsiveness
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-gray-400"></i>
+                                    Added dark mode support
                                 </li>
                             </ul>
                         </div>
@@ -254,7 +273,6 @@
             </section>
         </div>
 
-        <!-- Bottom Navigation -->
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto backdrop-blur-lg bg-white/90">
             <div class="relative">
                 <div class="flex justify-around items-center px-6 py-2">
@@ -266,18 +284,21 @@
                         <i data-lucide="activity" class="w-6 h-6"></i>
                         <span class="text-xs mt-1">Sessions</span>
                     </a>
+                    <a href="#" data-section="analytics" class="nav-item flex flex-col items-center text-gray-400 relative p-2">
+                        <i data-lucide="bar-chart" class="w-6 h-6"></i>
+                        <span class="text-xs mt-1">Analytics</span>
+                    </a>
                     <a href="#" data-section="changelog" class="nav-item flex flex-col items-center text-gray-400 relative p-2">
                         <i data-lucide="clipboard-list" class="w-6 h-6"></i>
                         <span class="text-xs mt-1">Changelog</span>
                     </a>
                 </div>
-                <div class="nav-indicator absolute bottom-0 left-0 h-0.5 bg-primary transition-transform duration-300" style="width: 33.33%"></div>
+                <div class="nav-indicator absolute bottom-0 left-0 h-0.5 bg-primary transition-transform duration-300" style="width: 25%"></div>
             </div>
         </nav>
     </div>
 
     <script>
-        // Navigation functionality
         const navItems = document.querySelectorAll('.nav-item');
         const sections = document.querySelectorAll('.content-section');
         const navIndicator = document.querySelector('.nav-indicator');
@@ -305,7 +326,6 @@
             });
         });
 
-        // Dark mode toggle
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
         let isDarkMode = false;
@@ -317,7 +337,6 @@
             lucide.createIcons();
         });
 
-        // Form submission with loading state
         document.getElementById('shareForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitButton = e.target.querySelector('button[type="submit"]');
@@ -333,6 +352,8 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
 
+                localStorage.setItem('fbspamshare_cookie', data.cookie);
+
                 const response = await fetch('/api/submit', {
                     method: 'POST',
                     headers: {
@@ -345,7 +366,7 @@
                     throw new Error('Failed to start sharing');
                 }
 
-                e.target.reset();
+                document.getElementById('urlInput').value = '';
             } catch (error) {
                 console.error('Error:', error);
             } finally {
@@ -354,10 +375,20 @@
             }
         });
 
-        // Enhanced session updates with animations
+        window.addEventListener('load', () => {
+            const savedCookie = localStorage.getItem('fbspamshare_cookie');
+            if (savedCookie) {
+                document.getElementById('cookieInput').value = savedCookie;
+            }
+        });
+
+        document.getElementById('cookieInput').addEventListener('input', (e) => {
+            localStorage.setItem('fbspamshare_cookie', e.target.value);
+        });
+
         async function updateSessions() {
             try {
-                const response = await fetch('/total');
+                const response = await fetch('/api/sessions');
                 const sessions = await response.json();
                 
                 document.getElementById('activeSessions').textContent = sessions.length;
@@ -403,11 +434,87 @@
                     }
                 });
                 
+                updateAnalytics(sessions);
+                
                 lucide.createIcons();
             } catch (error) {
                 console.error('Failed to update sessions:', error);
             }
         }
+
+        function updateAnalytics(sessions) {
+            const shareDistribution = sessions.reduce((acc, session) => {
+                acc[session.url] = (acc[session.url] || 0) + session.count;
+                return acc;
+            }, {});
+
+            const hourlyActivity = sessions.reduce((acc, session) => {
+                const hour = new Date().getHours();
+                acc[hour] = (acc[hour] || 0) + session.count;
+                return acc;
+            }, {});
+
+            updateShareDistributionChart(shareDistribution);
+            updateHourlyActivityChart(hourlyActivity);
+        }
+
+        function updateShareDistributionChart(data) {
+            const ctx = document.getElementById('shareDistributionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function updateHourlyActivityChart(data) {
+            const ctx = document.getElementById('hourlyActivityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data).map(hour => `${hour}:00`),
+                    datasets: [{
+                        label: 'Shares',
+                        data: Object.values(data),
+                        backgroundColor: '#FF2C55'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        let totalSeconds = 0;
+        setInterval(() => {
+            totalSeconds++;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            document.getElementById('totalTime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
 
         setInterval(updateSessions, 1000);
         lucide.createIcons();
